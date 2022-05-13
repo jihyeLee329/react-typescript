@@ -174,7 +174,8 @@ function Coin(){
                 <span>{priceInfo?.max_supply}</span>
                 </OverviewItem>
             </Overview>
-            <Link to=""></Link>  
+            <Link to={`/chart`}>Chart</Link>  
+            <Link to={`/price`}>Price</Link>  
             <Outlet />
             </>
       )}</Container>
