@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import styled from 'styled-components';
 import { useQuery } from "react-query";
 import { fetchCoins } from "../Api";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 // Helmet : 리액트 펠멧은 document의 <head>로 가는 direct link라서 ,
 // title 뿐만 아니라 파비콘 link css 모두 추가  가능
