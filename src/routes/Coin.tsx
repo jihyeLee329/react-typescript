@@ -7,6 +7,7 @@ import { fetchCoinInfo, fetchCoinTickers } from '../Api';
 import { Helmet } from "react-helmet-async";
 import Chart from './Chart';
 import Price from './Price';
+import BackBtn from '../BackBtn'
 
 const Container = styled.div`
     padding: 0 20px;
@@ -164,9 +165,11 @@ function Coin(){
           <Helmet>
             <title>{state?.name ? state.name : loading ? "Loading...": infoData?.name}</title>
           </Helmet>
+          <BackBtn/>
            <Header>
                <Title>{state?.name ? state.name : loading ? "Loading...": infoData?.name}</Title>
            </Header>
+           
            {loading ? (
             <Loader>Loading...</Loader>
              ) : (
