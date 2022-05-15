@@ -26,42 +26,57 @@ function Chart (){
         refetchInterval:1000,
     })
     return <div>{isLoading ? "Loading chart ...":
-    <ApexChart type="line" series={[
+    <ApexChart type="candlestick" 
+    series={[
         {
-            name :"price",
-            data: data?.map((price => price.close))??[],
+            data: data?.map(((price) => {
+           return {
+               x:price.time_close, 
+               y:[price.open.toFixed(3), price.high.toFixed(3), price.low.toFixed(3), price.close.toFixed(3)],
+           };
+        }))??[],
         },
     ]}
     options={{
-        grid:{
-            show: false
+        theme:{mode:"dark"},
+        chart : {
+            type: 'candlestick',
+            height:300, 
+            width:500, 
+            background:"transparent",
+            toolbar: {
+                show: false,
+            } //차트 상단 오른쪽에 툴바 숨김처리
         },
+        // stroke: {
+        //     curve : "smooth",
+        //     width:3,
+        // },
+        // grid:{
+        //     show: false
+        // },  차트 가로축라인
         xaxis: {
-            labels:{show:false},
-            axisTicks: {show:false},
-            axisBorder: {show:false},
+            tooltip: {
+                enabled: false
+            },
+            // axisTicks: {show:false},
+            // axisBorder: {show:false},
             type:"datetime",
             categories: data?.map((price => price.time_close))??[]
         },
         yaxis: {
-            show:false
+            tickAmount: 10, //y축 눈금 수 
         },
-        fill:{
-            type:"gradient",
-            gradient: {gradientToColors:["#0be881"], stops:[0, 100]},
-        },
-        colors:["#0fbcf9"],
-        tooltip:{
-            y:{
-                formatter:(value)=>`$ ${value.toFixed(3)}`
-            }
-        },
-        theme:{mode:"dark"},
-        chart : {height:300, width:500, toolbar:{ show:false}, background:"transparent"},
-        stroke: {
-            curve : "smooth",
-            width:3,
-        }
+        // fill:{
+        //     type:"gradient",
+        //     gradient: {gradientToColors:["#0be881"], stops:[0, 100]},
+        // },
+        // tooltip:{
+        //     y:{
+        //         formatter:(value)=>`$ ${value.toFixed(3)}`
+        //     }
+        // },
+       
     }}/>}</div>
 }
 
