@@ -1,6 +1,14 @@
 import { Link,useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import styled from 'styled-components';
+import { useQuery } from "react-query";
+import { fetchCoins } from "../Api";
+import { Helmet } from "react-helmet";
+
+// Helmet : 리액트 펠멧은 document의 <head>로 가는 direct link라서 ,
+// title 뿐만 아니라 파비콘 link css 모두 추가  가능
+
+
 const Container = styled.div`
     padding: 0 20px;
 `;
@@ -46,7 +54,7 @@ width:25px; height:25px;
 margin-right:10px;
 `;
 
-interface CoinInterface {
+interface ICoin {
     id: string,
     name: string,
     symbol: string,
@@ -60,34 +68,20 @@ interface RouterState {
         name:string;
     };
 }
-    // const name = location.state as RouterState;
-// const {name} = useLocation().state as RouterState;
 
 function Coins(){
-    const [coins, setCoins] =useState<CoinInterface[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    
-   
-    const {state} = useLocation() as RouterState;
-
-    console.log(state)
-
-    useEffect(()=>{
-        (async()=>{
-          const response = await fetch('https://api.coinpaprika.com/v1/coins');
-          const json= await response.json();
-          setCoins(json.slice(0,100));
-          setLoading(false);
-        })();
-    },[]);
+    const {isLoading, data} = useQuery<ICoin[]>("allCoins", fetchCoins);
    return(
        <Container>
+           <Helmet>
+            <title>코인</title>
+          </Helmet>
            <Header>
                <Title>코인</Title>
            </Header>
-           {loading ? <Loader>"Loading..." </Loader>: 
+           {isLoading ? <Loader>"Loading..." </Loader>: 
            <CoinsList>
-           {coins.map(coin => (
+           {data?.slice(0,100).map(coin => (
            <Coin key={coin.id}>
              <Link to={`/${coin.id}`} state={{name:coin.name}}>
              <Img src ={`https://cryptocurrencyliveprices.com/img/${coin.id}.png`} />{coin.name} &rarr;
