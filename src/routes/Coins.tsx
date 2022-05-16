@@ -23,10 +23,11 @@ const CoinsList = styled.ul`
 `;
 
 const Coin = styled.li`
-background-color:#fff;
-color:${props => props.theme.bgColor};
+background-color:${props => props.theme.cardBgColor};
+color:${props => props.theme.textColor};
 margin-bottom:10px;
 border-radius:15px; 
+border:1px solid #fff;
 a{  
     display:flex;
     align-items:center;
@@ -68,8 +69,11 @@ interface RouterState {
         name:string;
     };
 }
+interface ICoinsProps{
+    toggleDark : () => void
+}
 
-function Coins(){
+function Coins({toggleDark}:ICoinsProps){
     const {isLoading, data} = useQuery<ICoin[]>("allCoins", fetchCoins);
    return(
        <Container>
@@ -78,6 +82,7 @@ function Coins(){
           </Helmet>
            <Header>
                <Title>코인</Title>
+               <button onClick={toggleDark}>Button Toggle Theme</button>
            </Header>
            {isLoading ? <Loader>"Loading..." </Loader>: 
            <CoinsList>

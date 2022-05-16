@@ -145,7 +145,9 @@ interface PriceData{
         }
     };
 }
-
+interface ICoinProps {
+  isDark:boolean,
+}
 function Coin(){
    
     const {coinId} = useParams<Params>();

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import styled from 'styled-components'
+import styled, {ThemeProvider} from 'styled-components'
 import Router from './Router'
 import {ReactQueryDevtools} from 'react-query/devtools'
 import { HelmetProvider } from "react-helmet-async";
 import GlobalStyle from './style/global'
-
+import { darkTheme, lightTheme } from './theme';
 
 const Container = styled.div`
   background-color:${props => props.theme.bgColor};
@@ -28,22 +28,18 @@ function App (){
     event.preventDefault();
     console.log('hello ', value)
   }
- /* <Circle bgColor="tomato" borderColor="red" text="히히"/> */
-      /* <form onSubmit={onSubmit}>
-        <input type ="text" value={value} onChange={onChange} placeholder='username' />
-        <button>Log in </button>
-      </form>
-      <H1>테마에용</H1> */
 
-
-
+  const [isDark, setIsDark] = useState(false)
+  const toggleDark = ()=> setIsDark((current)=>!current );
   return (
     <>
-    <GlobalStyle />
-    <HelmetProvider>
-      <Router />
-    </HelmetProvider>
-    <ReactQueryDevtools initialIsOpen={true}/>
+    <ThemeProvider theme = {isDark ? darkTheme : lightTheme}>
+      <GlobalStyle />
+      <HelmetProvider>
+        <Router toggleDark ={toggleDark} isDark={isDark}/>
+      </HelmetProvider>
+      <ReactQueryDevtools initialIsOpen={true}/>
+    </ThemeProvider>
     </>
   )
 }
