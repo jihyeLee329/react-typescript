@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import { useQuery } from "react-query";
 import { fetchCoins } from "../Api";
 import { Helmet } from "react-helmet-async";
+import { useSetRecoilState } from "recoil";
+import { isDarkAtom } from "../atoms";
 
 // Helmet : 리액트 펠멧은 document의 <head>로 가는 direct link라서 ,
 // title 뿐만 아니라 파비콘 link css 모두 추가  가능
@@ -69,11 +71,10 @@ interface RouterState {
         name:string;
     };
 }
-interface ICoinsProps{
-    toggleDark : () => void
-}
 
-function Coins({toggleDark}:ICoinsProps){
+function Coins(){
+    const setDarkAtom = useSetRecoilState(isDarkAtom);
+    const toggleDarkAtom = ()=>setDarkAtom(prev =>!prev)
     const {isLoading, data} = useQuery<ICoin[]>("allCoins", fetchCoins);
    return(
        <Container>
@@ -82,7 +83,7 @@ function Coins({toggleDark}:ICoinsProps){
           </Helmet>
            <Header>
                <Title>코인</Title>
-               <button onClick={toggleDark}>Button Toggle Theme</button>
+               <button onClick={toggleDarkAtom}>Button Toggle Theme</button>
            </Header>
            {isLoading ? <Loader>"Loading..." </Loader>: 
            <CoinsList>

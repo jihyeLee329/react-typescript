@@ -5,6 +5,8 @@ import {ReactQueryDevtools} from 'react-query/devtools'
 import { HelmetProvider } from "react-helmet-async";
 import GlobalStyle from './style/global'
 import { darkTheme, lightTheme } from './theme';
+import { useRecoilValue } from 'recoil';
+import { isDarkAtom } from './atoms';
 
 const Container = styled.div`
   background-color:${props => props.theme.bgColor};
@@ -28,15 +30,13 @@ function App (){
     event.preventDefault();
     console.log('hello ', value)
   }
-
-  const [isDark, setIsDark] = useState(false)
-  const toggleDark = ()=> setIsDark((current)=>!current );
+  const isDark = useRecoilValue(isDarkAtom); 
   return (
     <>
     <ThemeProvider theme = {isDark ? darkTheme : lightTheme}>
       <GlobalStyle />
       <HelmetProvider>
-        <Router toggleDark ={toggleDark} isDark={isDark}/>
+        <Router/>
       </HelmetProvider>
       <ReactQueryDevtools initialIsOpen={true}/>
     </ThemeProvider>
