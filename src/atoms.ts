@@ -1,4 +1,4 @@
-import { atom } from "recoil";
+import { atom, selector } from "recoil";
 
 
 //atom은 두 가지를 요구 함 
@@ -17,3 +17,35 @@ export const isDarkAtom = atom({
     key: "isDark",
     default : false,
 });
+
+
+
+
+// selector 은 atom 의 output을 변형시키는 도구 
+export interface IToDo{
+    text:string,
+    id:number,
+    category : "TO_DO"|"DOING"|"DONE";
+}
+
+export const toDoState = atom<IToDo[]>({
+    key:'toDo',
+    default:[],
+})
+
+// atom 의 아웃풋을 변경해주는게 selector() 인데, 
+// get function 이 있어야 atom을 받을 수 있다. 
+// 아래의 selector 은 toDoState라는 아톰을 바라보고 있고, 아톰이 변하면 selecotr도 변함
+
+export const toDoSelector = selector({
+    key:'toDoSelector',
+    get:({get}) =>{
+        const toDos = get(toDoState)
+        return [
+            toDos.filter(toDo => toDo.category === 'TO_DO'),
+            toDos.filter(toDo => toDo.category === "DOING"),
+            toDos.filter(toDo => toDo.category === "DONE"),
+        ];
+
+    }
+})
