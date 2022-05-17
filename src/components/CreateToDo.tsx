@@ -1,18 +1,20 @@
 import { useForm } from "react-hook-form";
-import { useSetRecoilState } from "recoil";
-import {toDoState ,IToDo } from '../atoms'
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import {toDoState ,IToDo, categoryState } from '../atoms'
 
 
 interface IForm {
-    toDo : string
+    toDo : string,
+    category :string
 }
 
 function CreateToDo() {
     const setToDos = useSetRecoilState(toDoState);
+    const category = useRecoilValue(categoryState);
     const {register, handleSubmit, setValue} = useForm<IForm>();
     const onSubmit = ({toDo}:IForm)=>{
        setToDos((oldToDos)=>[
-           {text:toDo, id:Date.now(), category:"TO_DO"},
+           {text:toDo, id:Date.now(), category},
            ...oldToDos, 
         ])
        setValue("toDo",""); //input 값 초기화

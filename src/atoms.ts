@@ -1,5 +1,5 @@
 import { atom, selector } from "recoil";
-
+import { recoilPersist } from 'recoil-persist';
 
 //atom은 두 가지를 요구 함 
 // 1. key, 고유의 이름이어야 함 
@@ -18,21 +18,42 @@ export const isDarkAtom = atom({
     default : false,
 });
 
-
-
+export enum Categories {
+    "TO_DO" = "TO_DO",
+    "DOING" = "DOING",
+    "DONE" = "DONE",
+    "DELETE" = "DELETE"
+}
 
 // selector 은 atom 의 output을 변형시키는 도구 
 export interface IToDo{
     text:string,
     id:number,
-    category : "TO_DO"|"DOING"|"DONE";
+    category : Categories;
 }
+
+export const categoryState = atom<Categories>({
+    key:'category',
+    default:Categories.TO_DO,
+});
+
+
+
+const { persistAtom } = recoilPersist({
+    key: 'recoil-persist',
+    storage: localStorage,
+});
 
 export const toDoState = atom<IToDo[]>({
     key:'toDo',
     default:[],
+    effects_UNSTABLE: [persistAtom],
 })
-
+// export const toDoList = atom({
+//     key: 'toDoList',
+//     default: [],
+    
+// });
 // atom 의 아웃풋을 변경해주는게 selector() 인데, 
 // get function 이 있어야 atom을 받을 수 있다. 
 // 아래의 selector 은 toDoState라는 아톰을 바라보고 있고, 아톰이 변하면 selecotr도 변함
@@ -40,12 +61,8 @@ export const toDoState = atom<IToDo[]>({
 export const toDoSelector = selector({
     key:'toDoSelector',
     get:({get}) =>{
-        const toDos = get(toDoState)
-        return [
-            toDos.filter(toDo => toDo.category === 'TO_DO'),
-            toDos.filter(toDo => toDo.category === "DOING"),
-            toDos.filter(toDo => toDo.category === "DONE"),
-        ];
-
+        const toDos = get(toDoState);
+        const category = get(categoryState);
+        return  toDos.filter(toDo => toDo.category === category);
     }
 })
