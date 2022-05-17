@@ -1,13 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
 import { Link, useMatch } from 'react-router-dom';
 import {useLocation, useParams, Route, Routes, Outlet} from 'react-router-dom';
 import styled from 'styled-components';
-import { fetchCoinInfo, fetchCoinTickers } from '../Api';
-import { Helmet } from "react-helmet-async";
-import Chart from './Chart';
-import Price from './Price';
-import BackBtn from '../backup/BackBtn'
+import Chart from '../routes/Chart';
+import Price from '../routes/Price';
 
 const Container = styled.div`
     padding: 0 20px;
@@ -145,33 +141,34 @@ interface PriceData{
         }
     };
 }
-interface ICoinProps {
-  isDark:boolean,
-}
-function Coin(){
+
+function Coin2(){
    
     const {coinId} = useParams<Params>();
     const {state} = useLocation() as RouteState;
+    const [info, setInfo] = useState<InfoData>(); //타입이 뭔지 아니까 빈어레이 default 값 지우기
+    const [loading,setLoading] =useState(true);
+    const [priceInfo, setPriceInfo]= useState<PriceData>();
     const priceMatch = useMatch("/:coinId/price"); //useMatch는 특정 url에 있는지 여부 object 형태 
     const chartMatch = useMatch("/:coinId/chart");
-    const {isLoading: infoLoading, data:infoData} = useQuery<InfoData>(["info",coinId], ()=> fetchCoinInfo(coinId!));
-    const {isLoading : tickersLoading, data:tickersData} = useQuery<PriceData>(["tickers",coinId],
-     ()=> fetchCoinTickers(coinId!),
-     {
-       refetchInterval:5000,
-     });
-    const loading = infoLoading || tickersLoading;
-    
+
+   useEffect(()=>{
+       (async ()=>{
+        const infoData =await (await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)).json();
+        const priceData = await(
+            await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)
+        ).json();
+        setInfo(infoData);
+        setPriceInfo(priceData);
+        setLoading(false)
+    })();
+   },[coinId]);
+
     return(
         <Container>
-          <Helmet>
-            <title>{state?.name ? state.name : loading ? "Loading...": infoData?.name}</title>
-          </Helmet>
-          <BackBtn/>
            <Header>
-               <Title>{state?.name ? state.name : loading ? "Loading...": infoData?.name}</Title>
+               <Title>{state?.name ? state.name : loading ? "Loading...": info?.name}</Title>
            </Header>
-           
            {loading ? (
             <Loader>Loading...</Loader>
              ) : (
@@ -179,26 +176,26 @@ function Coin(){
             <Overview>
                 <OverviewItem>
                 <span>Rank:</span>
-                <span>{infoData?.rank}</span>
+                <span>{info?.rank}</span>
                 </OverviewItem>
                 <OverviewItem>
                 <span>Symbol:</span>
-                <span>${infoData?.symbol}</span>
+                <span>${info?.symbol}</span>
                 </OverviewItem>
                 <OverviewItem>
-                <span>Price:</span>
-                <span>{tickersData?.quotes.USD.price ? "Yes" : "No"}</span>
+                <span>Open Source:</span>
+                <span>{info?.open_source ? "Yes" : "No"}</span>
                 </OverviewItem>
             </Overview>
-            <Description>{infoData?.description}</Description>
+            <Description>{info?.description}</Description>
             <Overview>
                 <OverviewItem>
                 <span>Total Suply:</span>
-                <span>{tickersData?.total_supply}</span>
+                <span>{priceInfo?.total_supply}</span>
                 </OverviewItem>
                 <OverviewItem>
                 <span>Max Supply:</span>
-                <span>{tickersData?.max_supply}</span>
+                <span>{priceInfo?.max_supply}</span>
                 </OverviewItem>
             </Overview>
             <Tabs>
@@ -211,10 +208,9 @@ function Coin(){
           </Tabs>
             
             
-            <Outlet context={{coinId}}/>
+            <Outlet />
             </>
       )}</Container>
     )
 }
 
-export default Coin;
